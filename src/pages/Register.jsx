@@ -1,16 +1,11 @@
-import { useState, useRef, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { useState, useEffect } from "react";
 import { Grid, Paper, TextField, Button } from "@mui/material";
 import { BeatLoader } from "react-spinners";
 
-import { USERNAME_REGEX, PASSWORD_REGEX } from "../utils/regex";
+import apiServices from "../api/services";
 import validateFields from "../utils/validators";
 
 export default function Register() {
-  const usernameFieldRef = useRef();
-  const errorRef = useRef();
-
   const [isLoading, setIsLoading] = useState(false);
 
   const [email, setEmail] = useState("");
@@ -24,9 +19,19 @@ export default function Register() {
   const [shouldDisplayErrors, setShouldDisplayErrors] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
 
-  const [isSuccessful, setIsSuccessful] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleRegisterButtonClick = () => {
+  const getAvailableOrganizations = async () => {
+    const response = await apiServices.organizations.getAll();
+    if (!response.success) {
+      setErrorMessage(response.errorMessage);
+      return;
+    }
+    console.log(response.data);
+    setAvailableOrganizations(response.data);
+  };
+
+  const handleRegisterButtonClick = async () => {
     if (Object.keys(validationErrors).length > 0) {
       setShouldDisplayErrors(true);
       return;
@@ -38,6 +43,10 @@ export default function Register() {
       setIsLoading(false);
     }, 1000);
   };
+
+  useEffect(() => {
+    getAvailableOrganizations();
+  }, []);
 
   useEffect(() => {
     const validationErrors = validateFields({
