@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Grid, Paper, TextField, Button } from "@mui/material";
 import { BeatLoader } from "react-spinners";
 
+import Select from "../components/Select";
 import apiServices from "../api/services";
 import validateFields from "../utils/validators";
 
@@ -27,7 +28,7 @@ export default function Register() {
       setErrorMessage(response.errorMessage);
       return;
     }
-    console.log(response.data);
+
     setAvailableOrganizations(response.data);
   };
 
@@ -83,7 +84,7 @@ export default function Register() {
             label="Email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            sx={inputTextFieldStyles}
+            sx={inputTextFieldStyle}
             error={shouldDisplayErrors && validationErrors.email}
             helperText={shouldDisplayErrors && validationErrors.email}
           />
@@ -93,7 +94,7 @@ export default function Register() {
             label="Username"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
-            sx={inputTextFieldStyles}
+            sx={inputTextFieldStyle}
             error={shouldDisplayErrors && validationErrors.username}
             helperText={shouldDisplayErrors && validationErrors.username}
           />
@@ -103,7 +104,7 @@ export default function Register() {
             label="Password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            sx={inputTextFieldStyles}
+            sx={inputTextFieldStyle}
             error={shouldDisplayErrors && validationErrors.password}
             helperText={shouldDisplayErrors && validationErrors.password}
           />
@@ -113,17 +114,18 @@ export default function Register() {
             label="Confirm Password"
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
-            sx={inputTextFieldStyles}
+            sx={inputTextFieldStyle}
             error={shouldDisplayErrors && validationErrors.confirmPassword}
             helperText={shouldDisplayErrors && validationErrors.confirmPassword}
           />
 
-          <TextField
-            type="text"
-            label="Organization"
-            value={selectedOrganization}
-            onChange={(event) => setSelectedOrganization(event.target.value)}
-            sx={inputTextFieldStyles}
+          <Select
+            placeholder="Organization"
+            selectedValue={selectedOrganization}
+            setSelectedValue={setSelectedOrganization}
+            allValues={availableOrganizations}
+            labelKey="name"
+            valueKey="id"
           />
 
           <Button
@@ -141,7 +143,7 @@ export default function Register() {
   );
 }
 
-const inputTextFieldStyles = {
+const inputTextFieldStyle = {
   width: 300,
   "&&": {
     marginBottom: 1,
