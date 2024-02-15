@@ -9,6 +9,7 @@ import validateFields from "../utils/validators";
 export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
 
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -40,9 +41,17 @@ export default function Register() {
 
     setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    const response = await apiServices.auth.register(fullName, email, username, password, selectedOrganization.id);
+    if (!response.success) {
+      setErrorMessage(response.errorMessage);
+      return;
+    }
+
+    console.log("Registestratoon successful");
+
+    // setAvailableOrganizations(response.data);
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -51,9 +60,11 @@ export default function Register() {
 
   useEffect(() => {
     const validationErrors = validateFields({
+      fullName: fullName,
       email: email,
       username: username,
       password: password,
+      organization: selectedOrganization,
     });
 
     if (password !== confirmPassword) {
@@ -61,7 +72,7 @@ export default function Register() {
     }
 
     setValidationErrors(validationErrors);
-  }, [email, username, password, confirmPassword]);
+  }, [fullName, email, username, password, confirmPassword, selectedOrganization]);
 
   return (
     <Grid>
@@ -80,12 +91,22 @@ export default function Register() {
         //   onSubmit={handleRegisterButtonClick}
         >
           <TextField
+            type="text"
+            label="Full Name"
+            value={fullName}
+            onChange={(event) => setFullName(event.target.value)}
+            sx={inputTextFieldStyle}
+            error={shouldDisplayErrors && !!validationErrors.fullName}
+            helperText={shouldDisplayErrors && validationErrors.fullName}
+          />
+
+          <TextField
             type="email"
             label="Email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             sx={inputTextFieldStyle}
-            error={shouldDisplayErrors && validationErrors.email}
+            error={shouldDisplayErrors && !!validationErrors.email}
             helperText={shouldDisplayErrors && validationErrors.email}
           />
 
@@ -95,7 +116,7 @@ export default function Register() {
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             sx={inputTextFieldStyle}
-            error={shouldDisplayErrors && validationErrors.username}
+            error={shouldDisplayErrors && !!validationErrors.username}
             helperText={shouldDisplayErrors && validationErrors.username}
           />
 
@@ -105,7 +126,7 @@ export default function Register() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             sx={inputTextFieldStyle}
-            error={shouldDisplayErrors && validationErrors.password}
+            error={shouldDisplayErrors && !!validationErrors.password}
             helperText={shouldDisplayErrors && validationErrors.password}
           />
 
@@ -115,7 +136,7 @@ export default function Register() {
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
             sx={inputTextFieldStyle}
-            error={shouldDisplayErrors && validationErrors.confirmPassword}
+            error={shouldDisplayErrors && !!validationErrors.confirmPassword}
             helperText={shouldDisplayErrors && validationErrors.confirmPassword}
           />
 
@@ -126,6 +147,7 @@ export default function Register() {
             allValues={availableOrganizations}
             labelKey="name"
             valueKey="id"
+            error={shouldDisplayErrors && !!validationErrors.organization}
           />
 
           <Button

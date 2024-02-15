@@ -10,12 +10,18 @@ function generateSuccessResponse(fields) {
 }
 
 function generateErrorResponse(error) {
+  console.log("Error caught");
   const errorResponse = {
     success: false,
   };
 
+  console.log(error.response);
+  console.log(error.response.data);
+
   if (!error?.response) {
     errorResponse.errorMessage = "Could not connect to server.";
+  } else {
+    errorResponse.errorMessage = "Server Error.";
   }
 
   return errorResponse;
@@ -36,7 +42,29 @@ const apiServices = {
   organizations: {
     getAll: async () => {
       return await makeRequest(async () => {
-        return await axiosInstance.get(apiEndpoints.organizations.getAll);
+        return await axiosInstance.get(apiEndpoints.organizations.getAll());
+      });
+    },
+  },
+  auth: {
+    register: async (fullName, email, username, password, organizationId) => {
+      return await makeRequest(async () => {
+        const requestBody = {
+          full_name: fullName,
+          email: email,
+          username: username,
+          password: password,
+          phone_number: "0000000000",
+          organization_id: organizationId,
+          role: "admin",
+        };
+        const requestConfig = {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+
+        return await axiosInstance.post(apiEndpoints.auth.register(), JSON.stringify(requestBody), requestConfig);
       });
     },
   },

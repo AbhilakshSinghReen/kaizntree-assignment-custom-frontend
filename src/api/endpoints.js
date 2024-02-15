@@ -1,6 +1,9 @@
 const apiEndpoints = {
   organizations: {
-    getAll: "/organizations/",
+    getAll: () => "/organizations/",
+  },
+  auth: {
+    register: () => "/auth/register/",
   },
 };
 

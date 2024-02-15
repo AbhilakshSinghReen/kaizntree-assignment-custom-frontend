@@ -8,6 +8,7 @@ export default function CustomSelect({
   disabled,
   labelKey,
   valueKey,
+  error,
 }) {
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
@@ -20,7 +21,10 @@ export default function CustomSelect({
       displayEmpty
       renderValue={selectedValue !== "" ? undefined : () => placeholder}
       disabled={disabled}
-      sx={selectMainStyle}
+      sx={{
+        ...selectMainStyle,
+        backgroundColor: error ? "rgba(255, 0, 0, 0.25)" : "#FFFFFF",
+      }}
     >
       {allValues?.map((value) => (
         <MenuItem key={value[valueKey]} value={value}>
