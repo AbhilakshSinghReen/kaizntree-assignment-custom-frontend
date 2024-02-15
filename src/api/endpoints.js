@@ -4,6 +4,7 @@ const apiEndpoints = {
   },
   auth: {
     register: () => "/auth/register/",
+    login: () => "/auth/login/",
   },
 };
 

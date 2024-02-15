@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Grid, Paper, TextField, Button } from "@mui/material";
+import { Grid, Paper, TextField, Button, Link } from "@mui/material";
 import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
 
@@ -51,8 +51,6 @@ export default function Register() {
       return;
     }
 
-    console.log("Registestratoon successful");
-
     setIsLoading(false);
     toast("You have been registered successfully. Redirecting to login page.");
     setTimeout(() => navigate("/auth/login"), 5000);
@@ -92,10 +90,7 @@ export default function Register() {
       >
         <h2>Register</h2>
 
-        <form
-        //   className={classes.formContainer}
-        //   onSubmit={handleRegisterButtonClick}
-        >
+        <form onSubmit={handleRegisterButtonClick}>
           <TextField
             type="text"
             label="Full Name"
@@ -166,6 +161,10 @@ export default function Register() {
             {isLoading ? <BeatLoader color="white" loading={true} size={10} /> : "Register"}
           </Button>
         </form>
+
+        <div sx={alternateLinkTextStyle}>
+          <Link href="/auth/login">Already have an account? Login here.</Link>
+        </div>
       </Paper>
     </Grid>
   );
@@ -176,4 +175,8 @@ const inputTextFieldStyle = {
   "&&": {
     marginBottom: 1,
   },
+};
+
+const alternateLinkTextStyle = {
+  marginTop: 20,
 };

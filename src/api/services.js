@@ -21,7 +21,7 @@ function generateErrorResponse(error) {
   if (!error?.response) {
     errorResponse.errorMessage = "Could not connect to server.";
   } else {
-    errorResponse.errorMessage = "Server Error.";
+    errorResponse.errorMessage = "Login failed.";
   }
 
   return errorResponse;
@@ -65,6 +65,21 @@ const apiServices = {
         };
 
         return await axiosInstance.post(apiEndpoints.auth.register(), JSON.stringify(requestBody), requestConfig);
+      });
+    },
+    login: async (username, password) => {
+      return await makeRequest(async () => {
+        const requestBody = {
+          username: username,
+          password: password,
+        };
+        const requestConfig = {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+
+        return await axiosInstance.post(apiEndpoints.auth.login(), JSON.stringify(requestBody), requestConfig);
       });
     },
   },
