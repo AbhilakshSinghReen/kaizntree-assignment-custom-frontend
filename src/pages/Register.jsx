@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Grid, Paper, TextField, Button } from "@mui/material";
 import { BeatLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 import Select from "../components/Select";
 import apiServices from "../api/services";
 import validateFields from "../utils/validators";
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [fullName, setFullName] = useState("");
@@ -49,12 +53,14 @@ export default function Register() {
 
     console.log("Registestratoon successful");
 
-    // setAvailableOrganizations(response.data);
-
     setIsLoading(false);
+    toast("You have been registered successfully. Redirecting to login page.");
+    setTimeout(() => navigate("/auth/login"), 5000);
   };
 
   useEffect(() => {
+    document.title = "Register";
+
     getAvailableOrganizations();
   }, []);
 
