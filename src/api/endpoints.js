@@ -5,6 +5,7 @@ const apiEndpoints = {
   auth: {
     register: () => "/auth/register/",
     login: () => "/auth/login/",
+    refreshToken: () => "/auth/token/refresh/",
   },
 };
 

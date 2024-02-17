@@ -1,6 +1,9 @@
 import apiEndpoints from "./endpoints";
 
 import axiosInstance from "./axiosInstance";
+import { jwtDecode } from "jwt-decode";
+
+const ACCESS_TOKEN_EXPIRATION_MARGIN = 5; // seconds
 
 function generateSuccessResponse(fields) {
   return {
@@ -16,7 +19,7 @@ function generateErrorResponse(error) {
   };
 
   console.log(error.response);
-  console.log(error.response.data);
+  console.log(error.response?.data);
 
   if (!error?.response) {
     errorResponse.errorMessage = "Could not connect to server.";
@@ -36,6 +39,46 @@ async function makeRequest(requestFunc) {
   } catch (error) {
     return generateErrorResponse(error);
   }
+}
+
+async function getBearerAuthHeader() {
+  const savedAuthState = localStorage.getItem("auth");
+  if (!savedAuthState) {
+    // have to log in again
+    return;
+  }
+
+  const authState = JSON.parse(savedAuthState);
+
+  const decodedAccessToken = jwtDecode(authState.tokens.access);
+  const isAccessTokenExpired = Date.now() + 1000 * ACCESS_TOKEN_EXPIRATION_MARGIN > 1000 * decodedAccessToken.exp;
+  if (isAccessTokenExpired) {
+    console.warn("Access token expired, refreshing ...");
+
+    const tokenUpdateResponse = await makeRequest(async () => {
+      const requestBody = {
+        refresh: authState.tokens.refresh,
+      };
+      const requestConfig = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      return await axiosInstance.post(apiEndpoints.auth.refreshToken(), JSON.stringify(requestBody), requestConfig);
+    });
+
+    if (!tokenUpdateResponse.success) {
+      // throw error saying failed to refresh token
+    }
+
+    authState.tokens.access = tokenUpdateResponse.data.access;
+    localStorage.setItem("auth", JSON.stringify(authState));
+  }
+
+  return {
+    Authorization: `Bearer ${authState.tokens.access}`,
+  };
 }
 
 const apiServices = {
@@ -76,6 +119,7 @@ const apiServices = {
         const requestConfig = {
           headers: {
             "Content-Type": "application/json",
+            ...(await getBearerAuthHeader()),
           },
         };
 

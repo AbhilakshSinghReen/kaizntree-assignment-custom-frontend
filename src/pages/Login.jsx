@@ -33,22 +33,25 @@ export default function Register() {
     const response = await apiServices.auth.login(username, password);
     if (!response.success) {
       setErrorMessage(response.errorMessage);
+      setIsLoading(false);
       return;
     }
 
-    const accessToken = response.data.accessToken;
-    setAuth({
-      username: username,
+    const authState = {
       tokens: {
-        access: accessToken,
+        refresh: response.data.refresh,
+        access: response.data.access,
       },
-    });
+      user: {
+        username: username, // TODO: set user by JWT decode
+      },
+    };
 
-    console.log("Login successful");
+    setAuth(authState);
+    localStorage.setItem("auth", JSON.stringify(authState));
 
     setIsLoading(false);
-    toast("You have been registered successfully. Redirecting to login page.");
-    setTimeout(() => navigate("/auth/login"), 5000);
+    navigate("/dashboard");
   };
 
   useEffect(() => {
