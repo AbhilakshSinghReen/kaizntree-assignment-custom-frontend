@@ -1,9 +1,9 @@
 import React from 'react'
 
-export default function Builds() {
+export default function Manufacturers() {
   return (
     <div style={{ paddingTop: 50 }}>
-      <h1>Builds</h1>
+      <h1>Manufacturers</h1>
     </div>
   )
 }

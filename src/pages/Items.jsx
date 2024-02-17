@@ -2,6 +2,8 @@ import React from 'react'
 
 export default function Items() {
   return (
-    <div>Items</div>
+    <div style={{ paddingTop: 50 }}>
+      <h1>Items</h1>
+    </div>
   )
 }
