@@ -127,6 +127,70 @@ const apiServices = {
       });
     },
   },
+  models: {
+    getAll: async (modelName) => {
+      return await makeRequest(async () => {
+        const requestConfig = {
+          headers: {
+            "Content-Type": "application/json",
+            ...(await getBearerAuthHeader()),
+          },
+        };
+
+        return await axiosInstance.get(apiEndpoints.models.getAll(modelName), requestConfig);
+      });
+    },
+    getSingle: async (modelName, id) => {
+      return await makeRequest(async () => {
+        const requestConfig = {
+          headers: {
+            "Content-Type": "application/json",
+            ...(await getBearerAuthHeader()),
+          },
+        };
+
+        return await axiosInstance.get(apiEndpoints.models.getSingle(modelName, id), requestConfig);
+      });
+    },
+    create: async (modelName, requestBody) => {
+      return await makeRequest(async () => {
+        const endpoint = apiEndpoints.models.create(modelName);
+        const requestConfig = {
+          headers: {
+            "Content-Type": "application/json",
+            ...(await getBearerAuthHeader()),
+          },
+        };
+
+        return await axiosInstance.post(endpoint, JSON.stringify(requestBody), requestConfig);
+      });
+    },
+    updateSingle: async (modelName, id, requestBody) => {
+      return await makeRequest(async () => {
+        const endpoint = apiEndpoints.models.updateSingle(modelName, id);
+        const requestConfig = {
+          headers: {
+            "Content-Type": "application/json",
+            ...(await getBearerAuthHeader()),
+          },
+        };
+
+        return await axiosInstance.put(endpoint, JSON.stringify(requestBody), requestConfig);
+      });
+    },
+    deleteSingle: async (modelName, id) => {
+      return await makeRequest(async () => {
+        const requestConfig = {
+          headers: {
+            "Content-Type": "application/json",
+            ...(await getBearerAuthHeader()),
+          },
+        };
+
+        return await axiosInstance.delete(apiEndpoints.models.deleteSingle(modelName, id), requestConfig);
+      });
+    },
+  },
 };
 
 export default apiServices;
