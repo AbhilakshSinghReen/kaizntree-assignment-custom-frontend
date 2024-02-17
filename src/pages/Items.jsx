@@ -9,6 +9,9 @@ export default function Items() {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [items, setItems] = useState([]);
+  const [categoriesById, setCategoriesById] = useState({});
+  const [subcategoriesById, setSubcategoriesById] = useState({});
+  const [selectedItemIds, setSelectedItemIds] = useState(new Set());
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -18,7 +21,16 @@ export default function Items() {
       console.log(response);
       return;
     }
-    setCategories(response.data);
+
+    const fetchedCategories = response.data;
+
+    const updatedCategoriesById = {};
+    for (const category of fetchedCategories) {
+      updatedCategoriesById[category.id] = category;
+    }
+
+    setCategories(fetchedCategories);
+    setCategoriesById(updatedCategoriesById);
   };
 
   const getSubcategoriesFromApi = async () => {
@@ -27,7 +39,16 @@ export default function Items() {
       console.log(response);
       return;
     }
+
+    const fetchedSubcategories = response.data;
+
+    const updatedSubcategoriesById = {};
+    for (const subcategory of fetchedSubcategories) {
+      updatedSubcategoriesById[subcategory.id] = subcategory;
+    }
+
     setSubcategories(response.data);
+    setSubcategoriesById(updatedSubcategoriesById);
   };
 
   const getItemsFromApi = async () => {
@@ -105,7 +126,12 @@ export default function Items() {
 
       <Box mb={4} />
 
-      <ItemsTable items={items} />
+      <ItemsTable
+        items={items}
+        categoriesById={categoriesById}
+        selectedItemIds={selectedItemIds}
+        setSelectedItemIds={setSelectedItemIds}
+      />
     </div>
   );
 }

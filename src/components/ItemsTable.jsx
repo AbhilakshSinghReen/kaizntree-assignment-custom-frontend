@@ -1,12 +1,35 @@
-import { useState, useEffect } from "react";
 import { Box, Checkbox, Grid, Typography } from "@mui/material";
 
-export default function ItemsTable({ items }) {
+export default function ItemsTable({ items, categoriesById, selectedItemIds, setSelectedItemIds }) {
+  const handleSelectAllCheckboxClick = (isChecked) => {
+    if (!isChecked) {
+      setSelectedItemIds(new Set());
+      return;
+    }
+
+    setSelectedItemIds(new Set(items.map((item) => item.id)));
+  };
+
+  const handleSelectCheckboxClick = (itemId, isChecked) => {
+    const updatedSelectedItemIds = new Set(selectedItemIds);
+
+    if (!isChecked) {
+      updatedSelectedItemIds.delete(itemId);
+    } else {
+      updatedSelectedItemIds.add(itemId);
+    }
+
+    setSelectedItemIds(updatedSelectedItemIds);
+  };
+
   return (
     <div style={styles.listContainer}>
       <Box sx={styles.listHeaderContainer}>
         <Box mr={1}>
-          <Checkbox checked={false} onChange={(e) => console.log(e.target.checked)} />
+          <Checkbox
+            checked={items.length > 0 && selectedItemIds.size === items.length}
+            onChange={(e) => handleSelectAllCheckboxClick(e.target.checked)}
+          />
         </Box>
 
         <Grid container spacing={1}>
@@ -51,7 +74,10 @@ export default function ItemsTable({ items }) {
       {items.map((item) => (
         <Box sx={styles.listItemContainer} key={item.id}>
           <Box mr={1}>
-            <Checkbox checked={false} onChange={(e) => console.log(e.target.checked)} />
+            <Checkbox
+              checked={selectedItemIds.has(item.id)}
+              onChange={(e) => handleSelectCheckboxClick(item.id, e.target.checked)}
+            />
           </Box>
 
           <Grid container spacing={1}>
@@ -75,7 +101,7 @@ export default function ItemsTable({ items }) {
 
             <Grid sx={styles.gridItem} item md={2}>
               <Typography sx={styles.listHeaderCell} variant="h6" color="primary">
-                Category
+                {categoriesById[item.category]?.name ?? "N/A"}
               </Typography>
             </Grid>
 
