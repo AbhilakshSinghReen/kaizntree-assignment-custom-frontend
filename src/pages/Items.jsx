@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
-import { Box, Button } from "@mui/material";
-import { AccountTree as AccountTreeIcon, Category as CategoryIcon } from "@mui/icons-material";
+import { Box, Button, IconButton } from "@mui/material";
+import {
+  AccountTree as AccountTreeIcon,
+  Category as CategoryIcon,
+  DeleteForever as DeleteForeverIcon,
+} from "@mui/icons-material";
 
 import apiServices from "../api/services";
 import ItemsTable from "../components/ItemsTable";
+import ProgressBarWithLabel from "../components/ProgressBarWithLabel";
+import { delay } from "../utils/jsUtils";
 
 export default function Items() {
   const [categories, setCategories] = useState([]);
@@ -14,6 +20,8 @@ export default function Items() {
   const [selectedItemIds, setSelectedItemIds] = useState(new Set());
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deletionProgressPercentage, setDeletionProgressPercentage] = useState(0.0);
 
   const getCategoriesFromApi = async () => {
     const response = await apiServices.models.getAll("item-categories");
@@ -52,21 +60,53 @@ export default function Items() {
   };
 
   const getItemsFromApi = async () => {
-    setIsLoading(true);
-
     const response = await apiServices.models.getAll("items");
     if (!response.success) {
       console.log(response);
       return;
     }
     setItems(response.data);
+  };
+
+  const refreshAllFromApi = async () => {
+    setIsLoading(true);
+
+    await getCategoriesFromApi();
+    await getSubcategoriesFromApi();
+    await getItemsFromApi();
+
     setIsLoading(false);
   };
 
+  const handleDeleteButtonClick = async (event) => {
+    if (!window.confirm(`Are you sure you want to delete these ${selectedItemIds.size} items?`)) {
+      return;
+    }
+
+    setDeletionProgressPercentage(0.0);
+    setIsDeleting(true);
+
+    const selectedItemIdsArr = Array.from(selectedItemIds);
+
+    for (let i = 0; i < selectedItemIdsArr.length; i++) {
+      const response = await apiServices.models.deleteSingle("items", selectedItemIdsArr[i]);
+      if (!response.success) {
+        console.log(response);
+        break;
+      }
+
+      setDeletionProgressPercentage(((i + 1) / selectedItemIdsArr.length) * 100);
+      await delay(1000);
+    }
+
+    setSelectedItemIds(new Set());
+    setIsDeleting(false);
+    setDeletionProgressPercentage(0.0);
+    await refreshAllFromApi();
+  };
+
   useEffect(() => {
-    getCategoriesFromApi();
-    getSubcategoriesFromApi();
-    getItemsFromApi();
+    refreshAllFromApi();
   }, []);
 
   return (
@@ -122,7 +162,13 @@ export default function Items() {
         <Button color="primary" variant="contained">
           Search
         </Button>
+
+        <IconButton color="error" variant="contained" fontSize="large" onClick={handleDeleteButtonClick}>
+          <DeleteForeverIcon />
+        </IconButton>
       </Box>
+
+      {isDeleting && <ProgressBarWithLabel progressPercentage={deletionProgressPercentage} label="Deleting Items" />}
 
       <Box mb={4} />
 
