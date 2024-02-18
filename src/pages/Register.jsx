@@ -4,7 +4,7 @@ import { Grid, Paper, TextField, Button, Link } from "@mui/material";
 import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
 
-import Select from "../components/Select";
+import CustomSelect from "../components/Select";
 import apiServices from "../api/services";
 import validateFields from "../utils/validators";
 
@@ -141,7 +141,7 @@ export default function Register() {
             helperText={shouldDisplayErrors && validationErrors.confirmPassword}
           />
 
-          <Select
+          <CustomSelect
             placeholder="Organization"
             selectedValue={selectedOrganization}
             setSelectedValue={setSelectedOrganization}

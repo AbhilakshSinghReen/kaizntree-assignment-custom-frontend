@@ -9,6 +9,7 @@ export default function CustomSelect({
   labelKey,
   valueKey,
   error,
+  styleOverride,
 }) {
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
@@ -24,6 +25,7 @@ export default function CustomSelect({
       sx={{
         ...selectMainStyle,
         backgroundColor: error ? "rgba(255, 0, 0, 0.25)" : "#FFFFFF",
+        ...styleOverride,
       }}
     >
       {allValues?.map((value) => (

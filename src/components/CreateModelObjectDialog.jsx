@@ -15,6 +15,7 @@ import {
 import { BeatLoader } from "react-spinners";
 
 // import { toast } from "react-toastify";
+import CustomSelect from "./Select";
 import apiServices from "../api/services";
 
 export default function CreateModelObjectDialog({ open, setOpen, modelLabel, modelUrlPrefix, fields, onSuccess }) {
@@ -75,31 +76,66 @@ export default function CreateModelObjectDialog({ open, setOpen, modelLabel, mod
         setOpen(false);
       }}
     >
-      <DialogTitle>Create {modelLabel}</DialogTitle>
+      <DialogTitle
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <h2 style={{ margin: 0 }}>Create {modelLabel}</h2>
+      </DialogTitle>
 
       <DialogContent>
         {fields.map((field) => (
-          <Box
-            width="100%"
-            maxWidth="md"
-            display="flex"
-            flexDirection="row"
-            justifyContent="flex-start"
-            alignItems="center"
-            mb={2}
-          >
-            <Box width="50%">
+          <Box sx={styles.inputFieldContainer} key={field.name}>
+            <Box sx={styles.inputFieldHalfContainer}>
               <Typography variant="h6">{`${field.label}: `}</Typography>
             </Box>
 
-            <Box width="50%">
-              <TextField
-                sx={styles.dialogInputTextField}
-                type="text"
-                autoComplete="off"
-                value={fieldValues[field.name]}
-                onChange={(event) => handleFieldValueChange(field.name, event.target.value)}
-              />
+            <Box sx={styles.inputFieldHalfContainer}>
+              {field.type === "foreignKey" || field.type === "selectField" ? (
+                <CustomSelect
+                  placeholder={field.label}
+                  selectedValue={fieldValues[field.name]}
+                  setSelectedValue={(newValue) => handleFieldValueChange(field.name, newValue)}
+                  allValues={field.allValues}
+                  labelKey={field.labelKey}
+                  valueKey={field.valueKey}
+                  styleOverride={{
+                    backgroundColor: "#DDDDDD",
+                  }}
+                />
+              ) : field.type === "dependantForeignKey" ? (
+                <CustomSelect
+                  placeholder={field.label}
+                  selectedValue={fieldValues[field.name]}
+                  setSelectedValue={(newValue) => handleFieldValueChange(field.name, newValue)}
+                  allValues={field.allValues(
+                    Object.entries(fieldValues).reduce((acc, [key, value]) => {
+                      if (field.dependsOn.includes(key)) {
+                        acc[key] = value;
+                      }
+                      return acc;
+                    }, {})
+                  )}
+                  labelKey={field.labelKey}
+                  valueKey={field.valueKey}
+                  styleOverride={{
+                    backgroundColor: "#DDDDDD",
+                  }}
+                  disabled={!field.dependsOn.every((dependency) => fieldValues?.[dependency] !== "")}
+                />
+              ) : (
+                <TextField
+                  sx={styles.dialogInputTextField}
+                  type="text"
+                  autoComplete="off"
+                  value={fieldValues[field.name]}
+                  onChange={(event) => handleFieldValueChange(field.name, event.target.value)}
+                />
+              )}
             </Box>
           </Box>
         ))}
@@ -118,11 +154,28 @@ export default function CreateModelObjectDialog({ open, setOpen, modelLabel, mod
 
 const styles = {
   dialogInputTextField: {
-    width: "50%",
+    width: "100%",
   },
   dialogActions: {
     "&&": {
       justifyContent: "center",
     },
+  },
+  inputFieldContainer: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    backgroundColor: "#CCCCCC",
+    marginBottom: 2,
+    paddingLeft: 2,
+    paddingRight: 2,
+    paddingTop: 1,
+    paddingBottom: 1,
+    borderRadius: 1,
+  },
+  inputFieldHalfContainer: {
+    width: "50%",
   },
 };

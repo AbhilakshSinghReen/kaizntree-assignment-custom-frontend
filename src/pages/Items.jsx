@@ -21,6 +21,7 @@ export default function Items() {
   const [selectedItemIds, setSelectedItemIds] = useState(new Set());
 
   const [createItemCategoryDialogOpen, setCreateItemCategoryDialogOpen] = useState(false);
+  const [createItemDialogOpen, setCreateItemDialogOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -124,8 +125,131 @@ export default function Items() {
           {
             name: "name",
             label: "Name",
-            type: "string",
+            type: "CharField",
           },
+        ]}
+      />
+
+      <CreateModelObjectDialog
+        open={createItemDialogOpen}
+        setOpen={setCreateItemDialogOpen}
+        modelLabel="Item"
+        modelUrlPrefix="items"
+        onSuccess={refreshAllFromApi}
+        fields={[
+          {
+            name: "name",
+            label: "Name",
+            type: "CharField",
+            defaultValue: "",
+          },
+          {
+            name: "category",
+            label: "Category",
+            type: "foreignKey",
+            allValues: categories,
+            labelKey: "name",
+            valueKey: "id",
+          },
+          {
+            name: "sub_category",
+            label: "Sub Category",
+            type: "dependantForeignKey",
+            allValues: (selectedDependencyValues) => {
+              console.log("selected dependency values");
+              console.log(selectedDependencyValues);
+              return subcategories.filter((item) => item.category === selectedDependencyValues.category.id);
+            },
+            labelKey: "name",
+            valueKey: "id",
+            dependsOn: ["category"],
+          },
+          {
+            name: "description",
+            label: "Description",
+            type: "TextField",
+            defaultValue: "",
+          },
+          {
+            name: "stock_keeping_unit",
+            label: "Stock Keeping Unit",
+            type: "CharField",
+            defaultValue: "",
+          },
+          {
+            name: "allocated_to_sales",
+            label: "Allocated to sales",
+            type: "IntegerField",
+            defaultValue: 0,
+          },
+          {
+            name: "allocated_to_builds",
+            label: "Allocated to builds",
+            type: "IntegerField",
+            defaultValue: 0,
+          },
+          {
+            name: "available_stock",
+            label: "Available stock",
+            type: "IntegerField",
+            defaultValue: 0,
+          },
+          {
+            name: "incoming_stock",
+            label: "Incoming stock",
+            type: "IntegerField",
+            defaultValue: 0,
+          },
+          {
+            name: "minimum_stock",
+            label: "Minimum stock",
+            type: "IntegerField",
+            defaultValue: 0,
+          },
+          {
+            name: "desired_stock",
+            label: "Desired stock",
+            type: "IntegerField",
+            defaultValue: 0,
+          },
+          // {
+          //   name: "stock_status",
+          //   label: "Stock status",
+          //   type: "IntegerField",
+          //   defaultValue: 0,
+          // },
+          {
+            name: "on_build_order",
+            label: "On build order",
+            type: "IntegerField",
+            defaultValue: 0,
+          },
+          {
+            name: "can_build",
+            label: "Can build",
+            type: "IntegerField",
+            defaultValue: 0,
+          },
+          {
+            name: "cost",
+            label: "Cost",
+            type: "DecimalField",
+            defaultValue: 0.0,
+          },
+          // tags
+          // usage tags
+          // {
+          //   name: "allocated_to_builds",
+          //   label: "Allocated to builds",
+          //   type: "IntegerField",
+          //   defaultValue: 0,
+          // },
+          // {
+          //   name: "allocated_to_builds",
+          //   label: "Allocated to builds",
+          //   type: "IntegerField",
+          //   defaultValue: 0,
+          // },
         ]}
       />
 
@@ -169,7 +293,7 @@ export default function Items() {
       </Box>
 
       <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
-        <Button color="primary" variant="contained">
+        <Button color="primary" variant="contained" onClick={() => setCreateItemDialogOpen(true)}>
           New Item
         </Button>
 
