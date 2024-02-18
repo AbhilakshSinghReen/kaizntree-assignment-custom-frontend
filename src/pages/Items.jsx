@@ -9,6 +9,7 @@ import {
 import apiServices from "../api/services";
 import ItemsTable from "../components/ItemsTable";
 import ProgressBarWithLabel from "../components/ProgressBarWithLabel";
+import CreateModelObjectDialog from "../components/CreateModelObjectDialog";
 import { delay } from "../utils/jsUtils";
 
 export default function Items() {
@@ -18,6 +19,8 @@ export default function Items() {
   const [categoriesById, setCategoriesById] = useState({});
   const [subcategoriesById, setSubcategoriesById] = useState({});
   const [selectedItemIds, setSelectedItemIds] = useState(new Set());
+
+  const [createItemCategoryDialogOpen, setCreateItemCategoryDialogOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -111,6 +114,21 @@ export default function Items() {
 
   return (
     <div style={{ paddingTop: 70, paddingLeft: 270, paddingRight: 70 }}>
+      <CreateModelObjectDialog
+        open={createItemCategoryDialogOpen}
+        setOpen={setCreateItemCategoryDialogOpen}
+        modelLabel="Item Category"
+        modelUrlPrefix="item-categories"
+        onSuccess={refreshAllFromApi}
+        fields={[
+          {
+            name: "name",
+            label: "Name",
+            type: "string",
+          },
+        ]}
+      />
+
       <Box sx={headerStyle}>
         <Box sx={headerHalfPartStyle}>
           <h1 style={{ margin: 0 }}>Item Dashboard</h1>
@@ -139,7 +157,7 @@ export default function Items() {
       </Box>
 
       <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
-        <Button color="primary" variant="contained">
+        <Button color="primary" variant="contained" onClick={() => setCreateItemCategoryDialogOpen(true)}>
           New Item Category
         </Button>
       </Box>

@@ -23,6 +23,10 @@ function generateErrorResponse(error) {
 
   if (!error?.response) {
     errorResponse.errorMessage = "Could not connect to server.";
+  } else if (error.response?.data?.non_field_errors) {
+    errorResponse.errors = {
+      non_field_errors: error.response.data.non_field_errors,
+    };
   } else {
     errorResponse.errorMessage = "Login failed.";
   }

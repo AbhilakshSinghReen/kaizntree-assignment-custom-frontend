@@ -8,11 +8,11 @@ const apiEndpoints = {
     refreshToken: () => "/auth/token/refresh/",
   },
   models: {
-    getAll: (modelName) => `/${modelName}`,
-    getSingle: (modelName, id) => `/${modelName}/${id}`,
-    create: (modelName) => `/${modelName}`,
-    updateSingle: (modelName, id) => `/${modelName}/${id}`,
-    deleteSingle: (modelName, id) => `/${modelName}/${id}`,
+    getAll: (modelName) => `/${modelName}/`,
+    getSingle: (modelName, id) => `/${modelName}/${id}/`,
+    create: (modelName) => `/${modelName}/`,
+    updateSingle: (modelName, id) => `/${modelName}/${id}/`,
+    deleteSingle: (modelName, id) => `/${modelName}/${id}/`,
   },
 };
 
